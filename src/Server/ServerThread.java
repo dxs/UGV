@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Calendar;
 import java.util.StringTokenizer;
 
 
@@ -31,8 +32,8 @@ extends Thread
 	
 	
 	public void run(){
-		System.out.println("-----> Le client " + clientSocket.getInetAddress().getHostName() 
-				+" est connecte <------");
+		
+		Calendar time = Calendar.getInstance();
 		
 		try {
 			
@@ -42,6 +43,14 @@ extends Thread
 		} catch (IOException e) {
 			System.err.println("ERROR: could not open communication streams with client.");
 		}
+		
+		
+		System.out.println("-----> Le client " + clientSocket.getInetAddress().getHostName() 
+				+" est connecte <------");
+		//Welcome message
+		out.println("|WEL|Successfully connected to server! Date: "+ time.getTime().toString());
+		System.out.println("WEL|Successfully connected to server! Date: "+ time.getTime().toString());
+		
 		
 		//listen to new messages coming from the BufferedReader
 		StreamListenerThread slt = new StreamListenerThread(this, new StreamListener(){
@@ -56,9 +65,9 @@ extends Thread
 				message = messageFromClient.nextToken();
 				System.out.println(message);
 				
-				
+				//if valid the request is handled
 				if(Server.RequestHandlers.containsKey(message)){
-					Server.dispatchRequest(message);
+					Server.RequestHandlers.get(message).handleRequest(messageFromClient.nextToken());
 				}
 			}
 			
